@@ -5,6 +5,10 @@ from flask_smorest import Api
 from .config import Config
 from .db import db
 from .routes.health import blp
+from .routes.locations import blp as locations_blp
+from .routes.events import blp as events_blp
+from .routes.weather import blp as weather_blp
+from .routes.recommendation import blp as recommendation_blp
 
 
 # Initialize Flask app
@@ -34,6 +38,10 @@ api = Api(app)
 
 # Register blueprints
 api.register_blueprint(blp)
+api.register_blueprint(locations_blp)
+api.register_blueprint(events_blp)
+api.register_blueprint(weather_blp)
+api.register_blueprint(recommendation_blp)
 
 # Create tables if not present (dev-friendly; for production use proper migrations)
 with app.app_context():
