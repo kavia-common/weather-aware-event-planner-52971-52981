@@ -9,6 +9,7 @@ from .routes.locations import blp as locations_blp
 from .routes.events import blp as events_blp
 from .routes.weather import blp as weather_blp
 from .routes.recommendation import blp as recommendation_blp
+from .models import Location  # ensure models are imported for seeding
 
 
 # Initialize Flask app
@@ -47,6 +48,22 @@ api.register_blueprint(recommendation_blp)
 with app.app_context():
     try:
         db.create_all()
+        # Development-friendly seed: add a few default locations if none exist.
+        try:
+            if db.session.query(Location).count() == 0:
+                defaults = [
+                    # name, city, state, country, lat, lon
+                    {"name": "San Francisco, CA", "city": "San Francisco", "state": "CA", "country": "US", "latitude": 37.7749, "longitude": -122.4194},
+                    {"name": "New York, NY", "city": "New York", "state": "NY", "country": "US", "latitude": 40.7128, "longitude": -74.0060},
+                    {"name": "London, UK", "city": "London", "state": None, "country": "GB", "latitude": 51.5074, "longitude": -0.1278},
+                ]
+                for d in defaults:
+                    db.session.add(Location(**d))
+                db.session.commit()
+                print("[Bootstrap] Seeded default locations.")
+        except Exception as seed_exc:
+            # Do not fail bootstrap if seeding fails
+            print(f"[Bootstrap] Location seeding skipped due to error: {seed_exc}")
     except Exception as exc:
         # Avoid hard failures in bootstrap; log to stdout
         print(f"[Bootstrap] DB initialization error: {exc}")
