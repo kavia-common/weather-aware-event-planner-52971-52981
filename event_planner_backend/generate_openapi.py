@@ -3,7 +3,7 @@ import os
 from app import app, api  # import your Flask app and Api instance
 
 with app.app_context():
-    # flask-smorest stores the spec in api.spec
+    # Ensure DB is initialized (imported in app.__init__) and generate spec
     openapi_spec = api.spec.to_dict()
 
     output_dir = "interfaces"
